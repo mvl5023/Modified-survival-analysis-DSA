@@ -15,7 +15,7 @@ Tw = 5000;                      % window length
 nWin = floor(Length/Tw);            % number of windows in sample array
 nTrain = 10;                        % number of windows before retraining
 t = 0;                            % time marker
-tau = 1;                          % transmit duration requested
+tau = 5;                          % transmit duration requested
 threshold = 0.95;                  % interference threshold (probability of successful transmission)
 theta = (-1)*log(threshold);
 
@@ -25,14 +25,19 @@ interfTot = zeros(nWin, 1);
 interfRate = zeros(nWin, 1);
 
 % Occupancy data
+%--------------------------------------------------------------------------
 m = 1:nWin;
-%--------------------------------------------------------------------------
 % P1 = 50;                                % Occupancy event rate (lambda)
-% P2 = 20 + 15*sin(2*pi*m/100);            % Vacancy event rate 
+
 %--------------------------------------------------------------------------
-P2 = 2 + abs(100-m);
-P1(1:100) = 2 + m(1:100);
-P1(101:200) = 102 - abs(100 - m(101:200));
+% Sinusoidal channel parameter variations
+P1 = 20 - 15*sin(2*pi*m/100);             % Occupancy event rate
+P2 = 20 + 15*sin(2*pi*m/100);            % Vacancy event rate
+%--------------------------------------------------------------------------
+% % Linear channel parameter variations
+% P2 = 2 + abs(100-m);
+% P1(1:100) = 2 + m(1:100);
+% P1(101:200) = 102 - abs(100 - m(101:200));
 %=============================================================================
 % Variant 1: Time-varying mean vacancy, exponential
 %=============================================================================
@@ -210,17 +215,17 @@ for m = 1:nWin
                     %=============================================================
                     % Algorithm 2
                     %=============================================================
-                    if ((j > 1) && (M(i, (j-1)) == 1)) 
-                        tau = 1;
-                        while (H(t + tau) - H(t)) < theta
-                            tau = tau + 1;
-                            if (t + tau) > Ti(periodsIdle)
-                               break
-                            end
-                        end
-                        tau = tau - 1;
-                        schedule(i, (j + 1) : (j + 1 + tau)) = 1;
-                    end
+%                     if ((j > 1) && (M(i, (j-1)) == 1)) 
+%                         tau = 1;
+%                         while (H(t + tau) - H(t)) < theta
+%                             tau = tau + 1;
+%                             if (t + tau) > Ti(periodsIdle)
+%                                break
+%                             end
+%                         end
+%                         tau = tau - 1;
+%                         schedule(i, (j + 1) : (j + 1 + tau)) = 1;
+%                     end
                     %------------------------------------------------------------- 
                 elseif sample == 1
                     t = 0;
